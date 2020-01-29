@@ -1,18 +1,19 @@
+class Utils {
+    add(a, b) {
+        return a + ' + ' + b + ' = ' + (a + b)    
+    }
 
-this.add=function(a, b) {
-    return a + ' + ' + b + ' = ' + (a + b)
+    sub(a, b) {
+        return a + ' - ' + b + ' = ' + (a - b)    
+    }
+
+    mul(a, b) {
+        return a + ' * ' + b + ' = ' + (a * b)    
+    }
+
+    div(a, b) {
+        return a + ' / ' + b + ' = ' + (a / b)    
+    }
 }
 
-this.sub=function(a, b) {
-    return a + ' - ' + b + ' = ' + (a - b)
-}
-
-this.mul=function(a, b) {
-    return a + ' * ' + b + ' = ' + (a * b)
-}
-
-this.div=function(a, b) {
-    return a + ' / ' + b + ' = ' + (a / b)
-}
-
-//module.exports = add, div, mul, sub
+module.exports = new Utils()

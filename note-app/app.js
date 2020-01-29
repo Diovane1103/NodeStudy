@@ -1,10 +1,59 @@
-const operations = require('./utils.js')
-const chalk = require('chalk')  
+const utils = require('./utils.js')
+const yargs = require('yargs')
+const notes = require('./notes.js')
 
-//console.log(chalk.green.bold.inverse(add(5, 10)))
-//console.log(chalk.green.inverse.bold(add(5, 10) + ' ' + chalk.blue.inverse.bold(add(50, 15) + ' ') + add(12, 7)))
-
-console.log(chalk.blue.bold.inverse(operations.add(5, 6)))
-console.log(chalk.magenta.bold.inverse(operations.sub(10, 6)))
-console.log(chalk.green.bold.inverse(operations.mul(5, 6)))
-console.log(chalk.yellow.bold.inverse(operations.div(36, 6)))
+yargs.command({
+    command: 'add',
+    describe: 'Add a new note, necessary pass title and body of the note',
+    builder: {
+        title: {
+            describe: 'Note title',
+            demandOption: true,
+            type: 'string'
+        },
+        body: {
+            describe: 'Note body',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler: function(argv) {
+        notes.addNote(argv.title, argv.body)
+    }
+})
+yargs.command({
+    command: 'remove',
+    describe: 'Remove a note, necessary pass the title',
+    builder: {
+        title: {
+            describe: 'Note title',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler: function(argv) {
+        notes.removeNote(argv.title)
+    }
+})
+yargs.command({
+    command: 'read',
+    describe: 'Read a note, necessary pass the title',
+    builder: {
+        title: {
+            describe: 'Note title',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler: function(argv) {
+        console.log(notes.readNote(argv.title))
+    }
+})
+yargs.command({
+    command: 'list',
+    describe: 'List all notes',
+    handler: function() {
+        console.log(notes.listNotes())
+    }
+})
+yargs.parse()
