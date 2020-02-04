@@ -1,26 +1,61 @@
-const request = require('request')
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
+const yargs = require('yargs')
 
-const urlDarkSky = 'https://api.darksky.net/forecast/ea0aaceaeadd9450c77d13f215cbfa31/37.8267,-122.4233?units=si&lang=pt'
-const urlMapBox = 'https://api.mapbox.com/geocoding/v5/mapbox.places/Los%20Angeles.json?access_token=pk.eyJ1IjoiZGlvdmFuZXJvc3NhdG8iLCJhIjoiY2s2NnVnNmE4MXBqYTNlb2Y5a2lzZWZodiJ9.SM77Kna6CQnm5VQpcFQrEA&&limit=1'
+//const address = process.argv[2]
 
-// Dark Sky
-request({ url: urlDarkSky, json: true }, (err, response) => {
-    if(err) {
-        console.log('Unable to connect to weather service!')
-    } else if (response.body.error){
-        console.log('Unable to find location!')
-    } else {
-        console.log(response.body)
+yargs.command({
+    command: 'search',
+    describe: 'Search about the climate of the specific city or region',
+    builder: {
+        address: {
+            describe: 'Address',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler: function(argv) {
+        geocode(argv.address, (error, {latitude, longitude, name:location}) => {
+            if(error) {
+                return console.log('Error: ', error)
+            } 
+                
+            forecast(latitude, longitude, (err, {summary, temperature, apparentTemperature:fellsLike, humidity, precipProbability}) => {
+                if(err){
+                    return console.log(err)
+                }
+
+                console.log('In ' + location + ' the sky is ' + summary.toLowerCase() + ' and the temperature is currently ' + temperature + ' and fells like of ' + fellsLike + '.')
+                console.log('The humidity is ' + humidity + ' and the probability of rain is ' + precipProbability + '%.')
+            })
+            
+        })
     }
 })
 
-// Map Box
-request({ url: urlMapBox, json: true }, (err, response) => {
-    if(err){
-        console.log('Unable to connect with map box service!')
-    } else if (response.body.features.length === 0){
-        console.log('Unable to find the address disposed!')
-    } else {
-        console.log(response.body.features[0].center[1], response.body.features[0].center[0])   
-    }
-})
+yargs.parse()
+
+// if(address !== undefined && address !== '') {
+//     geocode(address, (error, data) => {
+//         if(error) {
+//             return console.log('Error: ', error)
+//         } 
+                        
+//         forecast(data.latitude, data.longitude, (err, forecastData) => {
+//             if(err){
+//                 return console.log(err)
+//             }
+        
+//             console.log('In ' + data.name + ' the sky is ' + forecastData.summary.toLowerCase() + ' and the temperature is currently ' + forecastData.temperature + ' and fells like of ' + forecastData.apparentTemperature + '.')
+//             console.log('The humidity is ' + forecastData.humidity + ' and the probability of rain is ' + forecastData.precipProbability + '%.')
+//         })
+                    
+//     })
+// } else {
+//     console.log('Please type a valid address!')
+// }
+
+
+
+
+
